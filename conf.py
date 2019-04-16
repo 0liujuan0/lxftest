@@ -6,6 +6,7 @@ import logging.handlers
 from cloghandler import ConcurrentRotatingFileHandler
 from selenium import webdriver
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+import xpaths
 
 # logger config
 logger = logging.getLogger('test')
@@ -20,7 +21,7 @@ login_url = 'http://10.44.206.125:81/'
 username = 'root'
 password = '123456'
 
-def get_driver(proxy=False):
+def get_driver(proxy=False, login=False):
     if proxy:
         #set up proxy
         prox = Proxy()
@@ -36,6 +37,14 @@ def get_driver(proxy=False):
     chrome_options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36')
     chrome_options.add_argument('--window-size=1024,768')
     driver = webdriver.Chrome('./chromedriver', chrome_options=chrome_options, desired_capabilities=capabilities)
+    if login:
+        driver.get(login_url)
+        name = driver.find_element_by_xpath(xpaths.login_username)
+        name.send_keys(username)
+        pw = driver.find_element_by_xpath(xpaths.login_password)
+        pw.send_keys(password)
+        login = driver.find_element_by_xpath(xpaths.login_btn)
+        login.click()
     return driver
 
 
